@@ -1,0 +1,73 @@
+{%- liquid
+  assign bf_now = 'now' | date: '%s' | plus: 0
+  assign bf_start = settings.bfcm_start_at | date: '%s' | plus: 0
+  assign bf_end = settings.bfcm_end_at | date: '%s' | plus: 1
+  assign bf_code = settings.bfcm_code | default: 'DEMO10'
+  assign bf_percent = settings.bfcm_percent | default: 10
+  assign bf_multiplier = 100.0 | minus: bf_percent | divided_by: 100.0
+  assign bf_start_label = settings.bfcm_start_at | slice: 0, 10
+  assign bf_end_label = settings.bfcm_end_at | slice: 0, 10
+  assign bf_offset = settings.bfcm_start_at | slice: 19, 6
+-%}
+<div class="bf" data-bf-home>
+  <div class="bf-ribbon">
+    {%- if bf_now >= bf_end -%}{{ 'bfcm.ended' | t }}{%- else -%}{{ 'bfcm.announcement' | t: starts: bf_start_label, ends: bf_end_label, offset: bf_offset, percent: bf_percent }}{%- endif -%}
+  </div>
+  <section class="bf-hero">
+    <div class="bf-hero-copy">
+      <p class="bf-eyebrow"><span></span>{{ 'bfcm.eyebrow' | t }}</p>
+      <h1>{{ 'bfcm.title' | t }}</h1>
+      <p class="bf-intro">{{ 'bfcm.intro' | t }}</p>
+      <div class="bf-actions">
+        {% if bf_now < bf_end %}<a class="bf-button" href="#discount-code" data-bfcm-trigger>{{ 'bfcm.get_code' | t: percent: bf_percent }} <span aria-hidden="true">↗</span></a>{% endif %}
+        <a class="bf-text-link" href="#bf-products">{{ 'bfcm.browse' | t }} <span aria-hidden="true">↓</span></a>
+      </div>
+      <p class="bf-date">{{ 'bfcm.dates' | t: starts: bf_start_label, ends: bf_end_label, offset: bf_offset, percent: bf_percent }}</p>
+    </div>
+    <div class="bf-hero-art">
+      {% if settings.bfcm_hero_image %}{{ settings.bfcm_hero_image | image_url: width: 1600 | image_tag: class: 'bf-hero-image', loading: 'eager', fetchpriority: 'high', widths: '600,1000,1600', sizes: '(max-width: 749px) 100vw, 50vw' }}{% else %}<div class="bf-art-placeholder" aria-hidden="true">BLACK<br>FRIDAY<span>{{ bf_percent }}% OFF</span></div>{% endif %}
+      <div class="bf-art-label">{{ shop.name | escape }} <span>01 / ESSENTIALS</span></div>
+      <p class="bf-art-note">{{ 'bfcm.art_note' | t }}</p>
+    </div>
+  </section>
+  <section class="bf-offer" aria-label="{{ 'bfcm.offer_label' | t }}">
+    <div><p class="bf-eyebrow">{{ 'bfcm.offer_label' | t }}</p><p class="bf-state">{% if bf_now >= bf_end %}{{ 'bfcm.ended' | t }}{% elsif bf_now < bf_start %}{{ 'bfcm.before' | t: starts: bf_start_label, ends: bf_end_label, offset: bf_offset, percent: bf_percent }}{% else %}{{ 'bfcm.live' | t }}{% endif %}</p></div>
+    <div class="bf-offer-amount">{% if bf_now < bf_end %}{{ bf_percent }}<span>%<small>OFF</small></span>{% else %}↗{% endif %}</div>
+    <div class="bf-offer-aside"><p>{% if bf_now >= bf_end %}{{ 'bfcm.ended_detail' | t }}{% else %}{{ 'bfcm.offer_detail' | t }}{% endif %}</p>{% if bf_now < bf_end %}<a href="#discount-code" data-bfcm-trigger>{{ 'bfcm.get_code' | t: percent: bf_percent }} ↗</a>{% endif %}</div>
+  </section>
+  <section class="bf-products" id="bf-products">
+    <div class="bf-section-head"><p class="bf-eyebrow">{{ 'bfcm.collection_eyebrow' | t }}</p><h2>{% if bf_now < bf_end %}{{ 'bfcm.collection_title' | t }}{% else %}{{ 'bfcm.browse' | t }}{% endif %}</h2></div>
+    <div class="bf-product-grid">
+      {% assign captions = 'one,two,three' | split: ',' %}
+      {% for caption in captions %}
+        {% assign product_key = 'bfcm_product_' | append: caption %}
+        {% assign item = settings[product_key] %}
+        {% if item != blank %}
+          {% assign caption_key = 'bfcm_label_' | append: caption %}
+          {% assign description_key = 'bfcm_description_' | append: caption %}
+          <article class="bf-card">
+            <div class="bf-card-image"><span class="bf-card-tag">{{ settings[caption_key] | escape }}</span>{% if item.featured_image %}{{ item.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '320,480,800', sizes: '(max-width: 749px) 90vw, 30vw' }}{% else %}{{ 'product-1' | placeholder_svg_tag }}{% endif %}</div>
+            <div class="bf-card-body"><h3>{{ item.title | escape }}</h3><p>{{ settings[description_key] | escape }}</p>
+              {% if bf_now < bf_end %}<div class="bf-price"><strong>{{ item.price | times: bf_multiplier | round | money }}</strong><span>{{ 'bfcm.price_label' | t: percent: bf_percent }}</span></div><p class="bf-regular">{{ 'bfcm.regular_label' | t }}: {{ item.price | money }}</p>{% else %}<div class="bf-price"><strong>{{ item.price | money }}</strong></div>{% endif %}
+              <a class="bf-card-link" href="{{ item.url }}">{% if item.available %}{{ 'bfcm.view' | t }}{% else %}{{ 'bfcm.sold_out' | t }}{% endif %}<span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% if bf_now < bf_end %}<p class="bf-terms">{{ 'bfcm.terms' | t: percent: bf_percent }}</p>{% endif %}
+  </section>
+  {% if bf_now < bf_end %}<section class="bf-steps">
+    {% for number in (1..3) %}{% assign title_key = 'bfcm.step_' | append: number %}{% assign text_key = title_key | append: '_text' %}<div><span class="bf-step-number">0{{ number }}</span><h3>{{ title_key | t }}</h3><p>{{ text_key | t: code: bf_code, start_at: settings.bfcm_start_at, end_at: settings.bfcm_end_at }}</p></div>{% endfor %}
+  </section>{% endif %}
+  <section class="bf-faq"><div><p class="bf-eyebrow">{{ 'bfcm.good_to_know' | t }}</p><h2>{{ 'bfcm.faq_title' | t }}</h2></div><div>
+    {% for number in (1..4) %}{% assign title_key = 'bfcm.faq_' | append: number %}{% assign text_key = title_key | append: '_answer' %}<details><summary>{{ title_key | t }}<span aria-hidden="true">+</span></summary><p>{{ text_key | t: code: bf_code, start_at: settings.bfcm_start_at, end_at: settings.bfcm_end_at }}</p></details>{% endfor %}
+    <div class="bf-policy-links"><a href="{{ shop.shipping_policy.url }}">{{ 'bfcm.shipping' | t }}</a><a href="{{ routes.all_products_collection_url }}">{{ 'bfcm.browse' | t }}</a></div>
+  </div></section>
+</div>
+{% stylesheet %}
+  .bf-art-placeholder{height:100%;min-height:450px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:clamp(64px,8vw,130px);font-weight:900;line-height:.9;color:#ed332f;background:#191919;letter-spacing:-.07em}.bf-art-placeholder span{font-size:28px;letter-spacing:0;margin-top:30px}.bf{--bf-red:#ed332f;--bf-ink:#141414;color:#eee;background:#111;font-family:Arial,Helvetica,sans-serif}.bf *{box-sizing:border-box}.bf a{color:inherit}.bf-ribbon{text-align:center;background:var(--bf-red);color:#fff;padding:12px 20px;font-size:13px;font-weight:700;letter-spacing:.04em}.bf-hero{display:grid;grid-template-columns:1fr 1fr;min-height:640px;max-width:1600px;margin:auto}.bf-hero-copy{padding:80px 36px 70px clamp(24px,5vw,90px);align-self:center;position:relative;z-index:1}.bf-eyebrow{font-size:11px!important;letter-spacing:.16em;font-weight:700;text-transform:uppercase;margin:0 0 24px!important}.bf-eyebrow>span{display:inline-block;width:7px;height:7px;background:var(--bf-red);border-radius:50%;margin-right:10px}.bf h1{font-size:clamp(52px,6.2vw,100px);font-weight:800;line-height:.98;letter-spacing:-.065em;color:#fff;margin:0;max-width:650px}.bf-intro{font-size:17px;line-height:1.6;max-width:340px;color:#bbb;margin:28px 0}.bf-actions{display:flex;gap:24px;align-items:center;flex-wrap:wrap}.bf-button{display:inline-flex;justify-content:space-between;align-items:center;gap:35px;padding:18px 24px;background:var(--bf-red);color:#fff!important;text-decoration:none;font-size:14px;font-weight:700;border:0;border-radius:3px;cursor:pointer;min-height:52px}.bf-button:hover{background:#ca2623}.bf-text-link{font-size:13px;text-underline-offset:6px}.bf-date{margin-top:32px;font-size:10px;color:#a6a6a6;letter-spacing:.1em}.bf-hero-art{position:relative;min-width:0;overflow:hidden;min-height:500px}.bf-hero-image{position:absolute;width:100%;height:100%;object-fit:cover;object-position:62% center;opacity:.88}.bf-hero-art:after{position:absolute;inset:0;content:'';background:linear-gradient(90deg,#111,transparent 30%),linear-gradient(0deg,#111 0%,transparent 20%);pointer-events:none}.bf-art-label{position:absolute;z-index:1;top:30px;left:35px;right:28px;font-size:12px;letter-spacing:.12em;font-weight:800;display:flex;justify-content:space-between}.bf-art-label span{font-size:9px;color:#aaa;font-weight:400}.bf-art-note{position:absolute;z-index:1;bottom:20px;left:35px;right:20px;font-size:10px;color:#aaa}.bf-offer{display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;align-items:center;max-width:1440px;margin:0 auto;padding:36px 5vw;border-top:1px solid #333;border-bottom:1px solid #333}.bf-offer .bf-eyebrow{color:#aaa}.bf-state{font-size:18px;letter-spacing:-.02em}.bf-offer-amount{font-size:150px;letter-spacing:-.09em;font-weight:800;line-height:1;display:flex;justify-content:center;color:var(--bf-red)}.bf-offer-amount>span{font-size:65px;letter-spacing:-.07em;display:flex;flex-direction:column;margin-top:12px}.bf-offer-amount small{font-size:22px;letter-spacing:.03em;margin-top:5px}.bf-offer-aside{max-width:250px;justify-self:end}.bf-offer-aside p{font-size:22px;line-height:1.4;letter-spacing:-.03em}.bf-offer-aside a{font-size:13px;text-underline-offset:6px}.bf-products{padding:70px 5vw;background:#f5f4f1;color:var(--bf-ink)}.bf-section-head{max-width:1280px;margin:0 auto 35px}.bf h2{font-size:clamp(30px,3vw,46px);line-height:1.1;letter-spacing:-.045em;font-weight:700;color:inherit;margin:0;max-width:560px}.bf-product-grid{max-width:1280px;margin:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.bf-card{background:#fff;border-radius:4px;overflow:hidden}.bf-card-image{position:relative;overflow:hidden;height:280px;background:#eae9e6;display:grid;place-items:center}.bf-card-image img,.bf-card-image svg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}.bf-card-tag{position:absolute;z-index:1;top:18px;left:18px;font-size:9px;letter-spacing:.12em;font-weight:700;background:#fff;padding:8px 10px}.bf-card-body{padding:25px}.bf-card h3{font-size:20px;line-height:1.2;letter-spacing:-.03em;color:#111;margin:0 0 12px;min-height:48px}.bf-card-body>p{color:#666;font-size:13px;line-height:1.5;min-height:39px;margin:0 0 24px}.bf-price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.bf-price strong{font-size:29px;letter-spacing:-.04em}.bf-price span{font-size:10px;color:#a2211e}.bf-card-body .bf-regular{font-size:11px;margin:7px 0 22px;min-height:0}.bf-card-link{border-top:1px solid #ddd;padding-top:18px;display:flex;justify-content:space-between;font-size:13px;text-decoration:none;font-weight:700;min-height:44px}.bf-terms{max-width:1280px;margin:25px auto 0;font-size:11px;line-height:1.6;color:#666}.bf-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;padding:60px 5vw;max-width:1440px;margin:auto}.bf-step-number{color:var(--bf-red);font-size:12px;font-weight:700}.bf-steps h3{font-size:21px;color:#fff;margin:14px 0 12px;letter-spacing:-.03em}.bf-steps p{font-size:13px;color:#aaa;line-height:1.6;margin:0}.bf-faq{padding:65px 5vw 85px;display:grid;grid-template-columns:1fr 1fr;gap:70px;border-top:1px solid #333;max-width:1440px;margin:auto}.bf-faq details{border-bottom:1px solid #333}.bf-faq summary{padding:20px 0;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;font-size:14px;font-weight:700}.bf-faq summary::-webkit-details-marker{display:none}.bf-faq details p{color:#aaa;font-size:13px;line-height:1.7;margin:0 0 22px}.bf-faq details[open] summary span{transform:rotate(45deg)}.bf-policy-links{display:flex;gap:24px;margin-top:24px;font-size:12px;text-underline-offset:5px}.bf :focus-visible{outline:3px solid #ed332f;outline-offset:5px}.bf-products :focus-visible{outline-color:#111}@media(max-width:749px){.bf-hero{grid-template-columns:1fr;min-height:0}.bf-hero-copy{padding:48px 24px 24px}.bf h1{font-size:62px;max-width:390px}.bf-intro{font-size:15px}.bf-hero-art{height:300px;min-height:0}.bf-hero-image{object-position:center 60%}.bf-art-label{left:24px;top:22px}.bf-art-note{left:24px}.bf-hero-art:after{background:linear-gradient(180deg,#111,transparent 28%,transparent 80%,#111)}.bf-offer{padding:28px 24px;grid-template-columns:1fr 1fr;gap:20px}.bf-offer-amount{font-size:108px;justify-content:end}.bf-offer-amount>span{font-size:43px}.bf-offer-amount small{font-size:16px}.bf-offer-aside{grid-column:1/-1;max-width:none;justify-self:start;display:flex;gap:20px;align-items:center}.bf-offer-aside p{font-size:17px;margin:0;max-width:190px}.bf-offer-aside a{font-size:12px}.bf-state{font-size:16px}.bf-products{padding:45px 24px}.bf-product-grid{grid-template-columns:1fr;gap:24px}.bf-card-image{height:300px}.bf-card h3,.bf-card-body>p{min-height:0}.bf-steps{padding:40px 24px;grid-template-columns:1fr;gap:30px}.bf-faq{padding:45px 24px 90px;grid-template-columns:1fr;gap:28px}.bf-actions{gap:20px}.bf-button{padding:17px 20px}.bf-ribbon{font-size:11px}.bf-date{font-size:9px}.bf-policy-links{flex-wrap:wrap}}@media(prefers-reduced-motion:reduce){.bf *{scroll-behavior:auto!important}}
+{% endstylesheet %}
+{% schema %}
+{"name":"Black Friday campaign","settings":[],"presets":[{"name":"Black Friday campaign"}]}
+{% endschema %}

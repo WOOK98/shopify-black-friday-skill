@@ -1,0 +1,36 @@
+{% doc %}
+  Refreshes a still-open storefront at campaign boundaries, including when a sleeping tab becomes visible.
+  @param {string} state - Current server-rendered campaign state.
+{% enddoc %}
+<span hidden data-bfcm-clock data-state="{{ state | escape }}" data-enabled="{{ settings.bfcm_enabled }}" data-start="{{ settings.bfcm_start_at | escape }}" data-end="{{ settings.bfcm_end_at | escape }}"></span>
+{% javascript %}
+  (() => {
+    const clock = document.querySelector('[data-bfcm-clock]');
+    if (!clock || window.Shopify?.designMode) return;
+    const start = Date.parse(clock.dataset.start);
+    const end = Date.parse(clock.dataset.end) + 1000;
+    const valid = clock.dataset.enabled === 'true' && Number.isFinite(start) && Number.isFinite(end) && end > start;
+    let timer;
+    const check = () => {
+      clearTimeout(timer);
+      const now = Date.now();
+      const expected = valid && now >= start && now < end ? 'active' : 'normal';
+      if (expected !== clock.dataset.state) {
+        const key = `bfcm-refresh:${start}:${end}:${expected}`;
+        try {
+          const last = Number(sessionStorage.getItem(key) || 0);
+          if (now - last < 60000) { timer = setTimeout(check, 60000); return; }
+          sessionStorage.setItem(key, String(now));
+        } catch {}
+        const url = new URL(location.href);
+        url.searchParams.set('bfcm_refresh', String(now));
+        location.replace(url.href);
+        return;
+      }
+      if (valid && now < end) timer = setTimeout(check, Math.min((now < start ? start : end) - now + 100, 2147483647));
+    };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+    window.addEventListener('pageshow', check);
+    check();
+  })();
+{% endjavascript %}

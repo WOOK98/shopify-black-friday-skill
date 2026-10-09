@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shopify Black Friday Skill"
+  short_description: "Reusable Shopify BFCM campaigns with automatic restoration"
+  default_prompt: "Use $shopify-black-friday-skill to prepare a reusable Shopify Black Friday campaign with a preview and automatic restoration."

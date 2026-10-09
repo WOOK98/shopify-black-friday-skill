@@ -1,0 +1,13 @@
+{% doc %}
+  Returns active only while the enabled campaign is within its configured inclusive date range.
+{% enddoc %}
+{%- liquid
+  assign current_time = 'now' | date: '%s' | plus: 0
+  assign starts = settings.bfcm_start_at | date: '%s' | plus: 0
+  assign ends = settings.bfcm_end_at | date: '%s' | plus: 0
+  if settings.bfcm_enabled and starts > 0 and ends > starts and current_time >= starts and current_time <= ends
+    echo 'active'
+  else
+    echo 'normal'
+  endif
+-%}

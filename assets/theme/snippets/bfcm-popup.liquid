@@ -1,0 +1,128 @@
+{% doc %}
+  Renders the Black Friday newsletter dialog and reveals the code after a confirmed Shopify form submission.
+{% enddoc %}
+{%- liquid
+  assign bf_discount_path = settings.bfcm_code | default: 'DEMO10' | url_encode | prepend: '/discount/'
+  assign bf_return_path = routes.all_products_collection_url | url_encode
+  assign bf_percent = settings.bfcm_percent | default: 10
+  assign bf_code = settings.bfcm_code | default: 'DEMO10'
+  assign bf_start_label = settings.bfcm_start_at | slice: 0, 10
+  assign bf_end_label = settings.bfcm_end_at | slice: 0, 10
+  assign bf_offset = settings.bfcm_start_at | slice: 19, 6
+-%}
+{% capture popup_state %}{% render 'bfcm-state' %}{% endcapture %}{% assign popup_state = popup_state | strip %}{% if popup_state == 'active' %}
+<a class="bf-float" href="#discount-code" data-bfcm-trigger>{{ 'bfcm.offer' | t: percent: bf_percent }} <span aria-hidden="true">↗</span></a>
+<dialog class="bf-dialog" id="BfcmDialog" aria-labelledby="BfcmTitle" data-bf-dialog data-code="{{ bf_code | escape }}" data-campaign="{{ settings.bfcm_start_at | escape }}" data-error="{{ 'bfcm.error' | t | escape }}" data-sending="{{ 'bfcm.sending' | t | escape }}" data-copied="{{ 'bfcm.copied' | t | escape }}" data-copy-failed="{{ 'bfcm.copy_failed' | t | escape }}">
+  <button type="button" class="bf-dialog-close" data-bf-close aria-label="{{ 'bfcm.close' | t }}">×</button>
+  <p class="bf-dialog-eyebrow">{{ 'bfcm.popup_eyebrow' | t: starts: bf_start_label, ends: bf_end_label, offset: bf_offset, percent: bf_percent }}</p>
+  <div class="bf-dialog-offer" aria-hidden="true">{{ bf_percent }}<span>%<small>OFF</small></span></div>
+  {% form 'customer', id: 'BfcmForm', class: 'bf-signup-form' %}
+    <input type="hidden" name="contact[tags]" value="newsletter,bfcm-{{ settings.bfcm_start_at | slice: 0, 4 }}">
+    <h2 id="BfcmTitle">{% if form.posted_successfully? %}{{ 'bfcm.success_title' | t }}{% else %}{{ 'bfcm.popup_title' | t: percent: bf_percent }}{% endif %}</h2>
+    <div data-bf-signup {% if form.posted_successfully? %}hidden{% endif %}>
+      <p>{{ 'bfcm.popup_intro' | t }}</p>
+      {% if form.errors %}<div class="bf-form-error" role="alert" data-bf-server-error>{{ form.errors | default_errors }}</div>{% endif %}
+      <label for="BfcmEmail">{{ 'bfcm.email' | t }}</label>
+      <input type="email" id="BfcmEmail" name="contact[email]" value="{{ form.email | escape }}" autocomplete="email" autocapitalize="off" spellcheck="false" required>
+      <button type="submit" class="bf-dialog-button">{{ 'bfcm.submit' | t }} <span aria-hidden="true">↗</span></button>
+      <p class="bf-consent">{{ 'bfcm.consent' | t }}</p>
+    </div>
+    <div data-bf-success data-confirmed="{% if form.posted_successfully? %}true{% else %}false{% endif %}" data-title="{{ 'bfcm.success_title' | t | escape }}" {% unless form.posted_successfully? %}hidden{% endunless %}>
+      <p>{{ 'bfcm.success_intro' | t: percent: bf_percent }}</p>
+      <div class="bf-code-box"><strong data-bf-code>{{ bf_code | escape }}</strong><button type="button" data-bf-copy>{{ 'bfcm.copy' | t }}</button></div>
+      <p class="bf-code-note">{{ 'bfcm.success_note' | t: starts: bf_start_label, ends: bf_end_label, offset: bf_offset, percent: bf_percent }}</p>
+      <a class="bf-dialog-button" href="{{ bf_discount_path }}?redirect={{ bf_return_path }}">{{ 'bfcm.apply' | t }} <span aria-hidden="true">↗</span></a>
+    </div>
+    <p class="bf-form-status" aria-live="polite" data-bf-status></p>
+  {% endform %}
+</dialog>
+{% endif %}
+{% stylesheet %}
+  .bf-float{position:fixed;bottom:24px;left:24px;z-index:45;display:flex;align-items:center;gap:28px;background:#ed332f;color:white!important;padding:16px 22px;border-radius:4px;font:700 13px Arial,sans-serif;text-decoration:none;box-shadow:0 6px 30px #0003}.bf-dialog{box-sizing:border-box;width:min(480px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:42px 36px 28px;border:1px solid #393939;border-radius:8px;color:#fff;background:#151515;overflow:auto;font-family:Arial,Helvetica,sans-serif;text-align:left}.bf-dialog::backdrop{background:#000b;backdrop-filter:blur(5px)}.bf-dialog [hidden]{display:none!important}.bf-dialog-close{position:absolute;top:10px;right:12px;width:44px;height:44px;background:none;border:0;color:#fff;font-size:28px;cursor:pointer}.bf-dialog-eyebrow{font-size:10px;letter-spacing:.13em;color:#c8c8c8;margin:0 0 18px}.bf-dialog-offer{display:flex;font-size:112px;line-height:1;letter-spacing:-.08em;font-weight:800;color:#ed332f;margin:10px 0 24px}.bf-dialog-offer>span{display:flex;flex-direction:column;font-size:48px;letter-spacing:-.04em;margin-top:7px}.bf-dialog-offer small{font-size:19px;letter-spacing:.04em}.bf-dialog h2{font-size:32px;letter-spacing:-.04em;line-height:1.06;color:#fff;margin:0 0 18px;font-weight:700}.bf-dialog p{line-height:1.6}.bf-signup-form{margin:0}.bf-signup-form>div>p{font-size:14px;color:#bbb}.bf-dialog label{font-size:12px;display:block;margin:24px 0 8px}.bf-dialog input[type=email]{box-sizing:border-box;width:100%;font-size:16px;background:#242424;color:#fff;border:1px solid #555;padding:15px;border-radius:3px;min-height:52px}.bf-dialog-button{box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:center;min-height:52px;margin:12px 0 0;padding:16px 20px;background:#ed332f;border:0;border-radius:3px;color:#fff!important;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer}.bf-dialog-button:disabled{opacity:.6;cursor:progress}.bf-signup-form>div>.bf-consent{font-size:11px;margin:16px 0 0;color:#aaa}.bf-code-box{border:1px dashed #777;background:#242424;padding:19px 16px;display:flex;justify-content:space-between;align-items:center;gap:16px}.bf-code-box strong{font-size:26px;letter-spacing:.06em;user-select:all}.bf-code-box button{background:none;border:0;color:#fff;text-decoration:underline;text-underline-offset:4px;cursor:pointer;min-height:44px;font-size:12px}.bf-signup-form>div>.bf-code-note{font-size:11px;margin:15px 0 24px}.bf-form-status,.bf-form-error{font-size:12px;line-height:1.5;color:#ffb5b3;margin:12px 0 0}.bf-form-status:empty{display:none}.bf-dialog :focus-visible{outline:3px solid #eee;outline-offset:4px}body.bf-popup-open{overflow:hidden}@media(max-width:749px){.bf-dialog{padding:38px 24px 24px}.bf-dialog-offer{font-size:90px}.bf-dialog h2{font-size:29px}.bf-float{bottom:16px;left:16px;padding:14px 18px;gap:20px}}
+{% endstylesheet %}
+{% javascript %}
+  (() => {
+    const initialize = () => {
+      const dialog = document.querySelector('[data-bf-dialog]');
+      if (!dialog || dialog.dataset.initialized) return;
+      dialog.dataset.initialized = 'true';
+      const form = dialog.querySelector('form');
+      const signup = dialog.querySelector('[data-bf-signup]');
+      const success = dialog.querySelector('[data-bf-success]');
+      const status = dialog.querySelector('[data-bf-status]');
+      const submit = form.querySelector('[type=submit]');
+      const storageKey = `bfcmConfirmed:${dialog.dataset.campaign}:${dialog.dataset.code}`;
+      const submitText = submit.innerHTML;
+      let nativeSubmit = false;
+      let lastTrigger;
+      const reveal = () => {
+        signup.hidden = true;
+        success.hidden = false;
+        dialog.querySelector('h2').textContent = success.dataset.title;
+        try { sessionStorage.setItem(storageKey, 'true'); } catch {}
+        if (dialog.open) dialog.querySelector('[data-bf-copy]').focus();
+      };
+      const open = (trigger) => {
+        lastTrigger = trigger || document.activeElement;
+        if (!dialog.open) dialog.showModal();
+        document.body.classList.add('bf-popup-open');
+        (success.hidden ? dialog.querySelector('[type=email]') : dialog.querySelector('[data-bf-copy]')).focus();
+      };
+      document.addEventListener('click', (event) => {
+        const trigger = event.target.closest('[data-bfcm-trigger], a[href="#discount-code"]');
+        if (trigger) { event.preventDefault(); open(trigger); }
+      });
+      dialog.querySelector('[data-bf-close]').addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        const rect = dialog.getBoundingClientRect();
+        if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
+      });
+      dialog.addEventListener('close', () => {
+        document.body.classList.remove('bf-popup-open');
+        if (lastTrigger?.isConnected) lastTrigger.focus();
+      });
+      dialog.querySelector('[data-bf-copy]').addEventListener('click', async (event) => {
+        const button = event.currentTarget;
+        try {
+          await navigator.clipboard.writeText(dialog.dataset.code);
+          button.textContent = dialog.dataset.copied;
+          status.textContent = dialog.dataset.copied;
+        } catch {
+          const range = document.createRange();
+          range.selectNodeContents(dialog.querySelector('[data-bf-code]'));
+          const selection = window.getSelection();
+          selection.removeAllRanges(); selection.addRange(range);
+          status.textContent = dialog.dataset.copyFailed;
+        }
+      });
+      form.addEventListener('submit', async (event) => {
+        if (nativeSubmit || !window.fetch || !form.checkValidity()) return;
+        event.preventDefault();
+        submit.disabled = true;
+        submit.textContent = dialog.dataset.sending;
+        status.textContent = '';
+        try {
+          const response = await fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { Accept: 'text/html' } });
+          if (!response.ok) throw new Error('signup_failed');
+          const html = new DOMParser().parseFromString(await response.text(), 'text/html');
+          const confirmed = html.querySelector('[data-bf-success][data-confirmed="true"]');
+          const failure = html.querySelector('[data-bf-server-error]');
+          if (confirmed) { reveal(); }
+          else if (failure) { status.textContent = failure.textContent; }
+          else {
+            nativeSubmit = true;
+            submit.disabled = false;
+            form.requestSubmit();
+          }
+        } catch { status.textContent = dialog.dataset.error; }
+        finally { submit.disabled = false; submit.innerHTML = submitText; }
+      });
+      const confirmedOnServer = success.dataset.confirmed === 'true';
+      if (confirmedOnServer) reveal();
+      try { if (sessionStorage.getItem(storageKey) === 'true') reveal(); } catch {}
+      if (confirmedOnServer || dialog.querySelector('[data-bf-server-error]') || location.hash === '#discount-code' || location.hash === '#BfcmForm') open();
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize); else initialize();
+    document.addEventListener('shopify:section:load', initialize);
+  })();
+{% endjavascript %}

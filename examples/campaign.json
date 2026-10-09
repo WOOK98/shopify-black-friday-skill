@@ -1,0 +1,9 @@
+{
+  "code": "DEMO10",
+  "percent": 10,
+  "start_at": "2026-11-16T00:00:00-05:00",
+  "end_at": "2026-11-30T23:59:59-05:00",
+  "enabled": false,
+  "products": [],
+  "suppress_footer_sections": []
+}

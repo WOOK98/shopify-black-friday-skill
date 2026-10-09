@@ -1,0 +1,13 @@
+{
+  "name": "shopify-black-friday-skill",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reusable Shopify Black Friday and BFCM campaign skill",
+  "type": "module",
+  "scripts": {
+    "test": "python3 -m unittest discover -s tests -v && node tests/lifecycle.mjs"
+  },
+  "devDependencies": {
+    "liquidjs": "10.30.0"
+  }
+}

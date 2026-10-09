@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+output/
+build/
+private/
+.bfcm-local/
+settings_data.json
+*.zip

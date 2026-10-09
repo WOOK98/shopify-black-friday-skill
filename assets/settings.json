@@ -1,0 +1,99 @@
+{
+  "name": "Black Friday campaign",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "bfcm_enabled",
+      "label": "Enable scheduled campaign",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "bfcm_code",
+      "label": "Discount code",
+      "default": "DEMO10"
+    },
+    {
+      "type": "range",
+      "id": "bfcm_percent",
+      "label": "Discount percentage",
+      "min": 1,
+      "max": 90,
+      "step": 1,
+      "default": 10,
+      "unit": "%"
+    },
+    {
+      "type": "text",
+      "id": "bfcm_start_at",
+      "label": "Start timestamp (ISO with offset)",
+      "default": "2026-11-16T00:00:00-05:00"
+    },
+    {
+      "type": "text",
+      "id": "bfcm_end_at",
+      "label": "Last active second (ISO with offset)",
+      "default": "2026-11-30T23:59:59-05:00"
+    },
+    {
+      "type": "image_picker",
+      "id": "bfcm_hero_image",
+      "label": "Campaign hero image"
+    },
+    {
+      "type": "paragraph",
+      "content": "Keep these dates, percentage and code in sync with Shopify Admin. The theme does not create or disable discounts."
+    },
+    {
+      "type": "product",
+      "id": "bfcm_product_one",
+      "label": "Featured product one"
+    },
+    {
+      "type": "text",
+      "id": "bfcm_label_one",
+      "label": "Product one label",
+      "default": "FEATURED"
+    },
+    {
+      "type": "text",
+      "id": "bfcm_description_one",
+      "label": "Product one description",
+      "default": "Explore the details and find your next upgrade."
+    },
+    {
+      "type": "product",
+      "id": "bfcm_product_two",
+      "label": "Featured product two"
+    },
+    {
+      "type": "text",
+      "id": "bfcm_label_two",
+      "label": "Product two label",
+      "default": "FEATURED"
+    },
+    {
+      "type": "text",
+      "id": "bfcm_description_two",
+      "label": "Product two description",
+      "default": "Explore the details and find your next upgrade."
+    },
+    {
+      "type": "product",
+      "id": "bfcm_product_three",
+      "label": "Featured product three"
+    },
+    {
+      "type": "text",
+      "id": "bfcm_label_three",
+      "label": "Product three label",
+      "default": "FEATURED"
+    },
+    {
+      "type": "text",
+      "id": "bfcm_description_three",
+      "label": "Product three description",
+      "default": "Explore the details and find your next upgrade."
+    }
+  ]
+}
