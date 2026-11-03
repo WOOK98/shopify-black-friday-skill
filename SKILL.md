@@ -1,15 +1,24 @@
 ---
 name: shopify-black-friday-skill
-description: Prepare reusable Shopify Black Friday and Cyber Monday (BFCM) campaigns with a seasonal homepage, newsletter coupon popup, scheduled restoration and annual reuse. Use when a merchant asks for a Shopify Black Friday campaign, 黑五活动页, 订阅领码, 活动结束恢复 or next-year reuse. Produces a separate local theme and preview checklist; does not publish a store or create discounts automatically.
+description: Prepare reusable Shopify Black Friday and Cyber Monday (BFCM) campaigns, previews, private backups and restoration plans. Use for 黑五活动, 精简活动页, 订阅领码, 活动结束恢复 or annual reuse. Includes a seasonal-theme installer and guidance for minimal adaptations; does not automatically publish stores or create discounts.
 ---
 
 # Shopify Black Friday Skill
 
 Build a reviewable campaign from an existing Online Store 2.0 theme. Keep merchant data in the merchant's local project, never in this skill's repository.
 
+## Choose the requested scope
+
+- **Minimal campaign:** when the merchant wants a short promotion with few changes, follow [references/minimal-campaign.md](references/minimal-campaign.md). Preserve navigation, hero and product layout. This is a theme-specific adaptation workflow; the included installer does not implement this mode.
+- **Seasonal homepage and coupon popup:** use the installer workflow below. It replaces the homepage during the campaign and expects a coupon code. Do not use it unchanged for an approved minimal design or an automatic-discount offer.
+- **Backup or restore only:** follow [references/private-backup.md](references/private-backup.md), without introducing a new campaign design.
+- **Publish the skill:** follow [docs/privacy.md](docs/privacy.md). Publish reusable authored resources and fictional examples only; keep private theme exports and recovery records outside the repository.
+
+Keep the merchant's selected discount method. A coupon requires a code; an automatic discount must not be presented as requiring one. A reminder is a request to notify, not permission to publish.
+
 ## Workflow
 
-1. Read the merchant's requirements and existing theme. Confirm the code, percentage, eligible merchandise, start/end timestamps with timezone, and existing welcome-offer implementation. Reuse decisions already supplied; do not ask again.
+1. Read the merchant's requirements and existing theme. Confirm the code, percentage, eligible merchandise, start/end timestamps with timezone, and existing welcome-offer implementation. Reuse decisions already supplied; do not ask again. Back up the current live baseline and existing welcome-offer rules using [references/private-backup.md](references/private-backup.md).
 2. Check compatibility in [references/implementation.md](references/implementation.md). The included installer targets Dawn-like layouts with header/footer section groups. Stop automatic patching on unsupported layouts and adapt an isolated copy explicitly.
 3. Save a private campaign JSON based on `examples/campaign.json`, outside the skill repository. Identify footer section IDs for any welcome popup that should be suppressed during the campaign. App-injected popups need their own integration; do not claim the installer disables them.
 4. Run `python3 scripts/prepare_campaign.py --theme THEME_EXPORT --output SEPARATE_OUTPUT --config PRIVATE_CONFIG`. Resolve paths relative to this skill directory. Output must be new and must not be nested in the source. Preparation does not publish or call Shopify. Default `enabled` is false.

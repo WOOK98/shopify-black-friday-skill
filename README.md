@@ -4,6 +4,8 @@
 
 Shopify 黑五活动 Skill：准备活动首页、订阅领码弹窗与到期恢复方案，下一年更新配置即可复用。
 
+短期活动也可以走精简流程：保留原首页，只增加活动提示与优惠说明。新增了私有备份、原欢迎优惠保留、到期恢复及公开发布脱敏指引。精简版需要按实际主题适配；内置脚本仍用于完整活动首页和优惠码弹窗。
+
 ![Shopify Black Friday Skill concept illustration](marketing/xiaohongshu/promo-cover.png)
 
 > AI-generated concept illustration, not a screenshot of a merchant store. All codes and products shown are fictional examples.
@@ -14,6 +16,7 @@ Shopify 黑五活动 Skill：准备活动首页、订阅领码弹窗与到期恢
 - Adds a mobile-friendly homepage and an accessible newsletter dialog that reveals a code after confirmed Shopify form acceptance.
 - Preserves original homepage and section groups, selecting them again outside the explicit campaign window.
 - Provides local renewal scripts, a backend discount checklist, and a reusable agent workflow.
+- Includes guides for minimal campaign adaptations, verified private backups and preserving an existing welcome offer.
 
 **Preparation is implemented; live Shopify discount creation and theme publishing are not automated by this package.** An agent with authorized Shopify access can perform those steps using the included checklist. “Restore” means switching back to preserved normal content, not reverting orders, subscribers, product edits or unrelated app state.
 
@@ -37,6 +40,8 @@ The workflow and assets can also be used with other agents that support `SKILL.m
 ## Local quick start
 
 Requires Python 3.10+. No API token is needed for local preparation.
+
+This installer prepares the **seasonal homepage + coupon popup** variant. For a minimal promotion or an automatic discount, start with the [minimal campaign guide](references/minimal-campaign.md); do not run this installer unchanged.
 
 Copy `examples/campaign.json` to a **private directory outside this repository**, then set dates, code, percentage, product handles and existing popup section IDs. The example is disabled by default.
 
@@ -77,7 +82,7 @@ Update the backend discount separately. Confirm that the retained theme still ma
 | Localization | English fallback added to storefront locale files; translate for non-English stores |
 | Products | Up to three selected products; example ships with no merchant products or images |
 
-Full guide: [implementation](references/implementation.md) · [launch and restore](references/launch-and-restore.md) · [privacy](docs/privacy.md) · [naming rationale](docs/naming.md).
+Full guide: [minimal campaign](references/minimal-campaign.md) · [private backup](references/private-backup.md) · [implementation](references/implementation.md) · [launch and restore](references/launch-and-restore.md) · [privacy](docs/privacy.md) · [naming rationale](docs/naming.md).
 
 ## Preview and promotional material
 

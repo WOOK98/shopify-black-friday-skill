@@ -9,6 +9,11 @@ __pycache__/
 output/
 build/
 private/
+private-backups/
+backups/
+theme-exports/
+*.private.json
+.shopify/
 .bfcm-local/
 settings_data.json
 *.zip

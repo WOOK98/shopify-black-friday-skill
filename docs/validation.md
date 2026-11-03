@@ -1,5 +1,19 @@
 # Validation record
 
+## Version 1.0.1 — 2026-11-03
+
+Documentation and packaging update: added minimal-campaign routing, private baseline verification, welcome-offer preservation and public-release privacy review. The seasonal-homepage installer and Liquid assets are unchanged; the minimal variant is guidance for theme-specific adaptation, not a new automatic installer.
+
+- Skill frontmatter and naming validator: passed.
+- Existing Python integration suite: 14 tests passed.
+- Existing Liquid/browser-clock lifecycle suite: 18 checks passed.
+- Public working files, reachable Git history and the previous release ZIP: checked for known merchant/product identifiers, real offer codes, contact details, credentials and machine paths; no matches found.
+- Four public promotional images: visually reviewed; no merchant screenshots or identifying product assets. PNG files contain no text or EXIF metadata chunks.
+
+No merchant theme export or backup is part of this release. These checks do not verify a live store deployment or checkout.
+
+## Version 1.0.0
+
 Version 1.0.0, local checks performed on 2026-10-09.
 
 - Skill frontmatter and naming validator: passed.

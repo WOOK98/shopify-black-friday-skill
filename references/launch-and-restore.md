@@ -2,7 +2,7 @@
 
 ## Before launch
 
-1. Keep a private original theme export and its live theme identifier. Run local tests and Shopify Theme Check on the generated theme. Ensure header/footer/popup adapters match the actual store.
+1. Follow [private-backup.md](private-backup.md) to retain a verified current theme export, live theme identifier and existing welcome-offer rules. Refresh the baseline if the live theme changed since preview approval. Run local tests and Shopify Theme Check on the generated theme. Ensure header/footer/popup adapters match the actual store.
 2. Upload only a draft theme using authorized Shopify tooling. Keep `.bfcm-local` outside the uploaded theme archive. Preview both desktop and mobile and check homepage, product, collection, cart and navigation.
 3. Use a separate disposable preview to simulate before start, exact start, final active second, expiry, disabled state and next-year dates. Verify that original homepage, announcement/footer and welcome popup reappear.
 4. Test newsletter rejection, successful submission, double opt-in/challenge if enabled, Escape/focus, code copy, apply-code link, and new versus returning visitors. Verify customer records in Shopify; mocks are not evidence of delivery or subscription.
@@ -10,11 +10,15 @@
 6. Confirm the prepared theme has the intended future window and code, not the disposable preview dates. Review the private `.bfcm-local/discount-plan.json` against Admin.
 7. Publish only on the merchant's launch instruction. If a reminder was requested, schedule a reminder using the host scheduler; a reminder must not silently become publication.
 
+Preserve an existing welcome discount and its usage history where the campaign can safely coexist with it. Temporarily suppress its storefront entry point, then restore that entry point at expiry. Do not delete and recreate the discount. Check actual eligibility: “once per customer” does not necessarily mean “first order only.” Non-stacking and which discount wins must be verified at checkout; hiding a popup does not disable a known code. If the merchant requires the welcome discount itself to be inactive, prepare an explicit backend reactivation mechanism before launch and report that dependency.
+
 ## At and after expiry
 
 The campaign branch stops rendering outside its time window, so the retained original homepage, groups and their original settings are selected again. Open tabs request a refresh when they reach the boundary or wake. The backend discount must expire independently in Shopify Admin.
 
 After expiry verify the live homepage, welcome popup and checkout. If the merchant needs immediate manual rollback, publish the saved original theme or disable `bfcm_enabled` on the campaign theme, then verify. Disabling the theme setting does **not** deactivate a backend discount; deactivate it in Admin separately if needed. Never revert unrelated product/order/customer changes.
+
+If unrelated edits were made during the campaign, reconcile them before publishing an older theme backup. Only stop the identified campaign discount; do not disable unrelated automatic or app discounts. Theme restoration is not evidence that the original welcome offer is redeemable: verify both its visible entry point and its backend rules.
 
 ## Next year
 
